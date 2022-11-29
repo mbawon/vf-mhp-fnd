@@ -182,7 +182,7 @@ html {
 }
 
 .chat-list {
-  height: calc(100vh - 275px);
+  height: calc(118vh - 275px);
   padding: 20px;
   overflow-y: auto;
   border: 2px solid #000;

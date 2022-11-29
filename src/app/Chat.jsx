@@ -1,91 +1,124 @@
-import React, { Fragment } from "react";
+import React, { Fragment, useState, useEffect, useRef } from "react";
 import { Navbar } from "./components/Navbar";
 import { MessageBox, Input } from "react-chat-elements";
 import "react-chat-elements/dist/main.css";
 import { Button, Card } from "antd";
+import http from "../api";
+
 
 export const Chat = () => {
-  const sendMessage = () => {};
+  const ref = useRef();
+  const messagesEnd = useRef(()=>{});
+
+  const [messages, setMessages] = useState([])
+  const [message, setMessage] = useState('')
+
+
+  const scrollToBottom = () => {
+    // messagesEnd.scrollIntoView({ behavior: "smooth" });
+  }
+
+  useEffect(() => {
+
+    const getMessage = async () => {
+
+      try {
+
+        const messageResponse = await http.get("get-post?CHAT_ID=4")
+
+        console.log(messageResponse.data[0].data)
+
+        setMessages(messageResponse.data[0].data)
+        scrollToBottom()
+      } catch (error) {
+
+        console.log(error.message)
+
+      }
+
+    }
+
+    getMessage()
+
+  }, [])
+
+  useEffect(() => {
+
+    ref.current?.scrollIntoView({ behavior: "smooth" });
+
+  }, [message]);
+
+
+  const sendMessage = async () => {
+    try {
+      const messageResponse = await http.post("post?USER_ID=4&&TEXT=" + message)
+
+      console.log(messageResponse.data)
+
+      // setMessages(messageResponse.data)
+      window.location.reload()
+    } catch (error) {
+      console.log(error);
+
+    }
+  };
 
   return (
     <div className="chatPage">
       <Navbar />
       <div className="chat">
-        <div className="chat-header">
+        {/*<div className="chat-header">
+           <Card className="c-h-card">333</Card>
           <Card className="c-h-card">333</Card>
           <Card className="c-h-card">333</Card>
-          <Card className="c-h-card">333</Card>
-          <Card className="c-h-card">333</Card>
-        </div>
+          <Card className="c-h-card">333</Card> 
+        </div>*/}
         <div className="chat-list">
           <MessageBox
             position="left"
             type="text"
-            text="Hi there !"
-            date={new Date()}
+            text="Hi, how may I be of help?"
+            // date={new Date()}
           />
 
-          <MessageBox
-            position="right"
-            type="text"
-            text="Click to join the meeting"
-            date={new Date()}
-          />
 
-          <MessageBox
-            position="right"
-            type="text"
-            text="Click to join the meeting"
-            date={new Date()}
-          />
+          {
 
-          <MessageBox
-            position="right"
-            type="text"
-            text="Click to join the meeting"
-            date={new Date()}
-          />
+            messages?.map((message, index) => (
 
-          <MessageBox
-            position="right"
-            type="text"
-            text="Click to join the meeting"
-            date={new Date()}
-          />
+              <MessageBox
+                // ref={ref}
+                key={index}
 
-          <MessageBox
-            position="right"
-            type="text"
-            text="Click to join the meeting"
-            date={new Date()}
-          />
+                position={message.USER_ID == 4 ? "right" : "left"}
 
-          <MessageBox
-            position="right"
-            type="text"
-            text="Click to join the meeting"
-            date={new Date()}
-          />
+                type="text"
 
-          <MessageBox
-            position="right"
-            type="text"
-            text="Click to join the meeting"
-            date={new Date()}
-          />
+                text={message.TEXT}
 
-          <MessageBox
-            position="right"
-            type="text"
-            text="Click to join the meeting"
-            date={new Date()}
-          />
+                date={new Date(message.CREATEDON)}
+
+              />
+
+
+
+            ))
+
+          }
+          {/* <div style={{ float: "left", clear: "both" }}
+            ref={(el) => { messagesEnd = el; }}>
+          </div> */}
         </div>
         <div className="chat-input">
           <Input
+
             placeholder="Type your message here..."
+            onChange={(e) => setMessage(e.target.value)}
             rightButtons={
-              <Button type="primary" size="large">
+              <Button
+                type="primary"
+                size="large"
+                onClick={sendMessage}>
                 Send
               </Button>
             }
@@ -99,7 +132,7 @@ export const Chat = () => {
               fontWeight: "bolder",
               paddingLeft: 20,
             }}
-            onSubmit={sendMessage}
+          // onSubmit={sendMessage}
           />
         </div>
       </div>

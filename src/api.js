@@ -1,6 +1,6 @@
 import axios from "axios";
 
-let baseURL = "http://10.233.5.180:2333/api/v1/register";
+let baseURL = "http://10.233.7.105:2333/api/v1/";
 
 const http = axios.create({
   baseURL: baseURL,
